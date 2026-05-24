@@ -1,9 +1,28 @@
 import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
 
-export async function createPaymentSession(amount: number, provider: string) {
+export async function createPaymentSession(amount: number, provider: string = 'payfast') {
+  if (provider === 'stripe') {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'zar',
+          product_data: { name: 'CareerAI Pro' },
+          unit_amount: amount * 100,
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/pricing',
+    });
+    return { url: session.url, provider: 'Stripe' };
+  }
+
+  // PayFast default
   return {
-    url: provider === 'payfast' ? `https://www.payfast.co.za/eng/process?amount=${amount}` : '#',
-    status: 'redirect'
+    url: `https://www.payfast.co.za/eng/process?merchant_id=\( {process.env.PAYFAST_MERCHANT_ID}&amount= \){amount}`,
+    provider: 'PayFast'
   };
 }
