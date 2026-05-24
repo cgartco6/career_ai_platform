@@ -1,0 +1,7 @@
+{
+  "name": "self-healing",
+  "dependencies": {
+    "openai": "^4.0.0",
+    "node-cron": "^3.0.3"
+  }
+}
