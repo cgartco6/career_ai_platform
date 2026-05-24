@@ -1,5 +1,7 @@
-# CareerAI Platform v1.2 - Cape Town, ZA
+# CareerAI Platform v1.3 - Self-Running AI Business (Cape Town, ZA)
 
-Full AI Resume + ATS + Interview + Marketing Engine.  
-Daily 50/50 payouts active. Pure pull marketing.  
-Free + Paid tiers live.
+Full AI Resume Builder + ATS + Interview Tutor + Marketing Engine.
+
+**Payouts**: 45% Owner | 10% African Bank | 45% Operations (10% reserve until R5,000 company registration).
+**Status**: Fully live, self-healing, self-evolving.
+**Free Tier Active**.
