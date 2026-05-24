@@ -3,10 +3,9 @@
   "version": "1.3.0",
   "scripts": {
     "setup": "./setup.sh",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run selfhealing\"",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && npm run dev",
-    "frontend": "cd frontend && npm run dev",
-    "selfhealing": "cd self-healing && npm run start"
+    "frontend": "cd frontend && npm run dev"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
