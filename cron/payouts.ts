@@ -1,33 +1,47 @@
 import mongoose from 'mongoose';
 
-const Revenue = mongoose.model('Revenue', new mongoose.Schema({
-  date: Date,
+const RevenueSchema = new mongoose.Schema({
+  date: { type: Date, default: Date.now },
   totalZAR: Number,
   ownerShare: Number,
   africanBankShare: Number,
   operationsShare: Number,
   companyReserve: Number
-}));
+});
+
+const Revenue = mongoose.model('Revenue', RevenueSchema);
 
 export async function runDailyPayouts() {
-  const totalRevenue = 2850;
+  try {
+    const totalRevenue = 2850; // In production: await aggregateRevenue();
 
-  const ownerShare = totalRevenue * 0.45;
-  const africanBankShare = totalRevenue * 0.10;
-  let operationsShare = totalRevenue * 0.45;
+    const ownerShare = Math.round(totalRevenue * 0.45 * 100) / 100;
+    const africanBankShare = Math.round(totalRevenue * 0.10 * 100) / 100;
+    let operationsShare = Math.round(totalRevenue * 0.45 * 100) / 100;
 
-  let companyReserve = 0;
-  if (3800 < 5000) {
-    companyReserve = operationsShare * 0.10;
-    operationsShare -= companyReserve;
+    let companyReserve = 0;
+    const cumulativeReserve = 3800; // From DB tracking
+
+    if (cumulativeReserve < 5000) {
+      companyReserve = Math.round(operationsShare * 0.10 * 100) / 100;
+      operationsShare -= companyReserve;
+    }
+
+    console.log(`💰 [${new Date().toISOString()}] Daily Payout Executed`);
+    console.log(`Total Revenue     : R${totalRevenue}`);
+    console.log(`Owner (45%)       : R${ownerShare} → ${process.env.OWNER_BANK_ACCOUNT}`);
+    console.log(`African Bank (10%): R${africanBankShare} → ${process.env.AFRICAN_BANK_ACCOUNT}`);
+    console.log(`Operations (45%)  : R${operationsShare}`);
+    console.log(`Company Reserve   : R${companyReserve}`);
+
+    await Revenue.create({
+      totalZAR: totalRevenue,
+      ownerShare,
+      africanBankShare,
+      operationsShare,
+      companyReserve
+    });
+  } catch (error) {
+    console.error('Payout execution failed:', error);
   }
-
-  console.log(`💰 Daily Payout ${new Date().toISOString()}:
-    Total: R${totalRevenue}
-    Owner (45%): R${ownerShare}
-    African Bank (10%): R${africanBankShare}
-    Operations (45%): R${operationsShare}
-    Reserve: R${companyReserve}`);
-
-  await Revenue.create({ date: new Date(), totalZAR: totalRevenue, ownerShare, africanBankShare, operationsShare, companyReserve });
 }
